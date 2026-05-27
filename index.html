@@ -1,0 +1,2190 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Grade Calculator</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #0b1220;
+        --panel: rgba(255, 255, 255, 0.06);
+        --panel2: rgba(255, 255, 255, 0.08);
+        --border: rgba(255, 255, 255, 0.12);
+        --text: rgba(255, 255, 255, 0.92);
+        --muted: rgba(255, 255, 255, 0.65);
+        --muted2: rgba(255, 255, 255, 0.5);
+        --shadow: 0 18px 60px rgba(0, 0, 0, 0.45);
+
+        --test: #5aa8ff;
+        --quiz: #35d07f;
+        --hw: #ffb14a;
+        --danger: #ff5b67;
+        --ok: #35d07f;
+        --warn: #ffcf4a;
+
+        --radius: 16px;
+        --radius-sm: 12px;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        height: 100%;
+      }
+
+      body {
+        margin: 0;
+        font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+        color: var(--text);
+        background: radial-gradient(1200px 800px at 10% -10%, rgba(90, 168, 255, 0.22), transparent 50%),
+          radial-gradient(900px 650px at 90% 0%, rgba(53, 208, 127, 0.18), transparent 55%),
+          radial-gradient(900px 650px at 50% 120%, rgba(255, 177, 74, 0.14), transparent 55%),
+          linear-gradient(180deg, #070b14, #0b1220 50%, #070b14);
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+
+      .wrap {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 28px 16px 48px;
+      }
+
+      header {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 16px;
+        margin-bottom: 18px;
+      }
+
+      .title {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+
+      .title h1 {
+        font-size: 20px;
+        margin: 0;
+        letter-spacing: -0.02em;
+      }
+
+      .title p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: 1.1fr 0.9fr;
+        gap: 16px;
+        align-items: start;
+      }
+
+      @media (max-width: 960px) {
+        .grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .card {
+        background: linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.04));
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        overflow: clip;
+      }
+
+      .card .hd {
+        padding: 14px 16px 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 12px;
+      }
+
+      .card .hd h2 {
+        font-size: 14px;
+        margin: 0;
+        font-weight: 700;
+        letter-spacing: -0.01em;
+      }
+
+      .card .hd .sub {
+        font-size: 12px;
+        color: var(--muted);
+        margin-top: 4px;
+        line-height: 1.35;
+      }
+
+      .card .bd {
+        padding: 14px 16px 16px;
+      }
+
+      .row {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+
+      .row > * {
+        flex: 0 0 auto;
+      }
+
+      .pill {
+        display: inline-flex;
+        gap: 8px;
+        align-items: center;
+        padding: 8px 10px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        color: var(--muted);
+        font-size: 12px;
+        line-height: 1;
+      }
+
+      .pill b {
+        color: var(--text);
+        font-weight: 700;
+      }
+
+      .gradeHero {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 10px;
+        padding: 16px;
+        margin-bottom: 14px;
+        border-radius: var(--radius);
+        background: radial-gradient(900px 220px at 10% 0%, rgba(90, 168, 255, 0.2), transparent 55%),
+          radial-gradient(700px 220px at 90% 0%, rgba(53, 208, 127, 0.18), transparent 55%),
+          linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.03));
+        border: 1px solid rgba(255, 255, 255, 0.14);
+      }
+
+      .gradeHeroTop {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+
+      .gradeBig {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+
+      .gradeBig .pct {
+        font-size: 34px;
+        font-weight: 800;
+        letter-spacing: -0.03em;
+      }
+
+      .gradeBig .letter {
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      .actions {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+
+      button,
+      input,
+      select {
+        font: inherit;
+      }
+
+      .btn {
+        appearance: none;
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        background: rgba(255, 255, 255, 0.08);
+        color: var(--text);
+        border-radius: 12px;
+        padding: 10px 12px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: transform 0.06s ease, background 0.15s ease, border-color 0.15s ease;
+      }
+
+      .btn:hover {
+        background: rgba(255, 255, 255, 0.1);
+        border-color: rgba(255, 255, 255, 0.2);
+      }
+
+      .btn:active {
+        transform: translateY(1px);
+      }
+
+      .btn.primary {
+        border-color: rgba(90, 168, 255, 0.35);
+        background: rgba(90, 168, 255, 0.16);
+      }
+
+      .btn.danger {
+        border-color: rgba(255, 91, 103, 0.35);
+        background: rgba(255, 91, 103, 0.14);
+      }
+
+      .btn.ghost {
+        background: transparent;
+        border-color: rgba(255, 255, 255, 0.14);
+      }
+
+      .fieldGrid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 10px;
+        margin-top: 10px;
+      }
+
+      @media (max-width: 520px) {
+        .fieldGrid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .field {
+        padding: 10px 10px;
+        border-radius: var(--radius-sm);
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        display: grid;
+        grid-template-columns: 1fr auto;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .field label {
+        display: inline-flex;
+        gap: 8px;
+        align-items: center;
+        font-size: 12px;
+        color: var(--muted);
+        user-select: none;
+      }
+
+      .dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        display: inline-block;
+      }
+
+      .dot.test {
+        background: var(--test);
+      }
+      .dot.quiz {
+        background: var(--quiz);
+      }
+      .dot.hw {
+        background: var(--hw);
+      }
+
+      .numWrap {
+        display: inline-flex;
+        gap: 6px;
+        align-items: center;
+      }
+
+      .num {
+        width: 72px;
+        padding: 8px 10px;
+        border-radius: 10px;
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        background: rgba(0, 0, 0, 0.18);
+        color: var(--text);
+        text-align: right;
+      }
+
+      .pctSuffix {
+        font-size: 12px;
+        color: var(--muted);
+      }
+
+      .warnLine {
+        margin-top: 10px;
+        padding: 10px 12px;
+        border-radius: 12px;
+        border: 1px solid rgba(255, 207, 74, 0.35);
+        background: rgba(255, 207, 74, 0.12);
+        color: rgba(255, 255, 255, 0.9);
+        font-size: 12px;
+        display: none;
+      }
+
+      .warnLine.show {
+        display: block;
+      }
+
+      .entriesTop {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-bottom: 10px;
+      }
+
+      .entryAdd {
+        display: grid;
+        grid-template-columns: 1fr 140px 110px 110px;
+        gap: 10px;
+        align-items: center;
+      }
+
+      @media (max-width: 720px) {
+        .entryAdd {
+          grid-template-columns: 1fr 1fr;
+        }
+      }
+
+      .input,
+      .select {
+        padding: 10px 12px;
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        background: rgba(0, 0, 0, 0.18);
+        color: var(--text);
+        outline: none;
+      }
+
+      .input::placeholder {
+        color: rgba(255, 255, 255, 0.45);
+      }
+
+      .entriesList {
+        display: grid;
+        gap: 10px;
+        margin-top: 12px;
+      }
+
+      .entry {
+        display: grid;
+        grid-template-columns: 1fr 150px 110px 110px;
+        gap: 10px;
+        align-items: center;
+        padding: 10px;
+        border-radius: var(--radius-sm);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        background: rgba(255, 255, 255, 0.05);
+      }
+
+      @media (max-width: 720px) {
+        .entry {
+          grid-template-columns: 1fr 1fr;
+        }
+      }
+
+      .entry.exempt {
+        opacity: 0.55;
+        filter: grayscale(0.35);
+      }
+
+      .entry.exempt .scoreText {
+        text-decoration: line-through;
+      }
+
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 10px;
+        border-radius: 999px;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        background: rgba(0, 0, 0, 0.14);
+        font-size: 12px;
+        color: var(--muted);
+        min-width: 0;
+      }
+
+      .badge .catChip {
+        width: 10px;
+        height: 10px;
+        border-radius: 999px;
+        flex: 0 0 auto;
+      }
+
+      .badge .txt {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .cat-test {
+        background: rgba(90, 168, 255, 0.22);
+        border-color: rgba(90, 168, 255, 0.28);
+      }
+      .cat-test .catChip {
+        background: var(--test);
+      }
+
+      .cat-quiz {
+        background: rgba(53, 208, 127, 0.2);
+        border-color: rgba(53, 208, 127, 0.26);
+      }
+      .cat-quiz .catChip {
+        background: var(--quiz);
+      }
+
+      .cat-hw {
+        background: rgba(255, 177, 74, 0.2);
+        border-color: rgba(255, 177, 74, 0.26);
+      }
+      .cat-hw .catChip {
+        background: var(--hw);
+      }
+
+      .toggle {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 10px 12px;
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        background: rgba(255, 255, 255, 0.06);
+        cursor: pointer;
+        user-select: none;
+        font-weight: 700;
+        font-size: 12px;
+      }
+
+      .toggle[data-on="true"] {
+        background: rgba(255, 207, 74, 0.14);
+        border-color: rgba(255, 207, 74, 0.3);
+      }
+
+      .toggle small {
+        font-weight: 600;
+        color: var(--muted);
+      }
+
+      .entry .meta {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        min-width: 0;
+      }
+
+      .scoreText {
+        font-weight: 800;
+        letter-spacing: -0.01em;
+        font-size: 14px;
+      }
+
+      .scoreSub {
+        font-size: 12px;
+        color: var(--muted);
+      }
+
+      .breakdown {
+        display: grid;
+        gap: 10px;
+        margin-top: 12px;
+      }
+
+      .catRow {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 10px;
+        padding: 12px;
+        border-radius: 14px;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        background: rgba(255, 255, 255, 0.05);
+        align-items: center;
+      }
+
+      .catRow .left {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        min-width: 0;
+      }
+
+      .catRow .name {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-weight: 800;
+        letter-spacing: -0.01em;
+      }
+
+      .catRow .details {
+        color: var(--muted);
+        font-size: 12px;
+        line-height: 1.35;
+      }
+
+      .catRow .right {
+        text-align: right;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+
+      .catRow .right .big {
+        font-weight: 800;
+        letter-spacing: -0.02em;
+      }
+
+      .catRow .right .small {
+        font-size: 12px;
+        color: var(--muted);
+      }
+
+      .hr {
+        height: 1px;
+        background: rgba(255, 255, 255, 0.12);
+        margin: 14px 0;
+      }
+
+      .helper {
+        color: var(--muted);
+        font-size: 12px;
+        line-height: 1.4;
+      }
+
+      .resultBox {
+        margin-top: 12px;
+        padding: 12px 12px;
+        border-radius: 14px;
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        background: rgba(255, 255, 255, 0.06);
+      }
+
+      .resultBox.ok {
+        border-color: rgba(53, 208, 127, 0.28);
+        background: rgba(53, 208, 127, 0.12);
+      }
+
+      .resultBox.warn {
+        border-color: rgba(255, 207, 74, 0.3);
+        background: rgba(255, 207, 74, 0.12);
+      }
+
+      .resultBox.bad {
+        border-color: rgba(255, 91, 103, 0.32);
+        background: rgba(255, 91, 103, 0.12);
+      }
+
+      .resultBox .big {
+        font-weight: 800;
+        letter-spacing: -0.02em;
+      }
+
+      .resultBox .small {
+        margin-top: 4px;
+        color: var(--muted);
+        font-size: 12px;
+        line-height: 1.35;
+      }
+
+      .footerRow {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-top: 12px;
+        color: var(--muted2);
+        font-size: 12px;
+      }
+
+      .kbd {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+        padding: 2px 6px;
+        border-radius: 8px;
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        background: rgba(0, 0, 0, 0.22);
+        color: rgba(255, 255, 255, 0.75);
+        font-size: 12px;
+      }
+
+      .fileBar {
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        background: linear-gradient(180deg, #050810, #0a101c);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+      }
+
+      .fileBarInner {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 10px 16px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+
+      .fileBarLabel {
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+      }
+
+      .fileSelect {
+        min-width: 160px;
+        flex: 1 1 160px;
+        max-width: 280px;
+        padding: 9px 12px;
+        border-radius: 10px;
+        border: 1px solid rgba(255, 255, 255, 0.16);
+        background: rgba(0, 0, 0, 0.35);
+        color: var(--text);
+        font-weight: 600;
+      }
+
+      .fileBarActions {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-left: auto;
+      }
+
+      .fileBarActions .btn {
+        padding: 8px 11px;
+        font-size: 12px;
+      }
+
+      .importSection {
+        margin-bottom: 14px;
+        border-radius: var(--radius-sm);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        background: rgba(255, 255, 255, 0.04);
+        overflow: hidden;
+      }
+
+      .importToggle {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        padding: 12px 14px;
+        border: none;
+        background: rgba(255, 255, 255, 0.04);
+        color: var(--text);
+        font-weight: 700;
+        font-size: 13px;
+        cursor: pointer;
+        text-align: left;
+      }
+
+      .importToggle:hover {
+        background: rgba(255, 255, 255, 0.07);
+      }
+
+      .importToggle .chev {
+        color: var(--muted);
+        transition: transform 0.15s ease;
+      }
+
+      .importToggle[aria-expanded="true"] .chev {
+        transform: rotate(180deg);
+      }
+
+      .importBody {
+        display: none;
+        padding: 0 14px 14px;
+        border-top: 1px solid rgba(255, 255, 255, 0.08);
+      }
+
+      .importBody.open {
+        display: block;
+      }
+
+      .importTextarea {
+        width: 100%;
+        min-height: 120px;
+        margin-top: 12px;
+        padding: 10px 12px;
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        background: rgba(0, 0, 0, 0.22);
+        color: var(--text);
+        resize: vertical;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+        font-size: 11px;
+        line-height: 1.4;
+      }
+
+      .importActions {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-top: 10px;
+        align-items: center;
+      }
+
+      .importConfirm {
+        margin-top: 12px;
+        padding: 12px;
+        border-radius: 12px;
+        border: 1px solid rgba(90, 168, 255, 0.3);
+        background: rgba(90, 168, 255, 0.1);
+        display: none;
+      }
+
+      .importConfirm.show {
+        display: block;
+      }
+
+      .importConfirm p {
+        margin: 0 0 10px;
+        font-size: 13px;
+        line-height: 1.45;
+      }
+
+      .importConfirm .row {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+
+      .categorySetup {
+        margin-bottom: 12px;
+        padding: 12px;
+        border-radius: var(--radius-sm);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        background: rgba(255, 255, 255, 0.04);
+      }
+
+      .categoryModeRow {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+
+      .categoryModeRow label {
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--muted);
+      }
+
+      .categoryModeRow .select {
+        min-width: 150px;
+        padding: 8px 10px;
+      }
+
+      .catNameInput {
+        flex: 1;
+        min-width: 0;
+        padding: 4px 6px;
+        border-radius: 8px;
+        border: 1px solid transparent;
+        background: transparent;
+        color: var(--text);
+        font-weight: 700;
+        font-size: 12px;
+      }
+
+      .catNameInput:hover,
+      .catNameInput:focus {
+        border-color: rgba(255, 255, 255, 0.2);
+        background: rgba(0, 0, 0, 0.2);
+        outline: none;
+      }
+
+      .field.cat-weight-field label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        min-width: 0;
+      }
+
+      .field.cat-weight-field.hidden {
+        display: none;
+      }
+
+      .entry.inactiveCat {
+        border-color: rgba(255, 207, 74, 0.25);
+      }
+
+      .entry.inactiveCat .scoreSub.inactiveNote {
+        color: var(--warn);
+      }
+
+      .ecBadge {
+        display: inline-flex;
+        align-items: center;
+        padding: 2px 7px;
+        border-radius: 999px;
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 0.02em;
+        text-transform: uppercase;
+        border: 1px solid rgba(255, 207, 74, 0.35);
+        background: rgba(255, 207, 74, 0.14);
+        color: rgba(255, 255, 255, 0.9);
+        margin-top: 4px;
+        width: fit-content;
+      }
+
+      .entry.extraCreditEntry {
+        border-color: rgba(255, 207, 74, 0.22);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="fileBar">
+      <div class="fileBarInner">
+        <span class="fileBarLabel">Grade file</span>
+        <select class="fileSelect" id="fileSelect" aria-label="Select grade file"></select>
+        <div class="fileBarActions">
+          <button class="btn ghost" type="button" id="newFileBtn">New File</button>
+          <button class="btn ghost" type="button" id="renameFileBtn">Rename</button>
+          <button class="btn danger" type="button" id="deleteFileBtn">Delete File</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="wrap">
+      <header>
+        <div class="title">
+          <h1>Grade Calculator</h1>
+          <p>Weighted categories with exemptions, automatic redistribution, and a “what do I need?” tool.</p>
+        </div>
+        <div class="pill" id="savePill" title="Saved automatically">
+          <span>Storage</span>
+          <b id="saveState">Ready</b>
+        </div>
+      </header>
+
+      <div class="grid">
+        <section class="card">
+          <div class="hd">
+            <div>
+              <h2>Weights</h2>
+              <div class="sub">Edit weights anytime. If a category has no active entries, its weight is redistributed among the others.</div>
+            </div>
+            <div class="actions">
+              <button class="btn ghost" id="resetBtn" type="button">Reset</button>
+            </div>
+          </div>
+          <div class="bd">
+            <div class="gradeHero" aria-live="polite">
+              <div class="gradeHeroTop">
+                <div class="gradeBig">
+                  <div class="pct" id="gradePct">—</div>
+                  <div class="letter" id="gradeLetter">Add entries to calculate your grade.</div>
+                </div>
+                <div class="row" id="gradePills">
+                  <span class="pill"><span>Effective weights</span> <b id="effWeights">—</b></span>
+                  <span class="pill"><span>Active entries</span> <b id="activeCount">0</b></span>
+                </div>
+              </div>
+            </div>
+
+            <div class="categorySetup">
+              <div class="categoryModeRow">
+                <label for="categoryMode">Categories</label>
+                <select class="select" id="categoryMode" aria-label="Number of categories">
+                  <option value="three">3 categories (e.g. Tests / Quizzes / Homework)</option>
+                  <option value="two">2 categories (e.g. Summative / Formative)</option>
+                </select>
+              </div>
+              <p class="helper" style="margin:8px 0 0">
+                Rename each category below (e.g. “Classwork” instead of “Homework”). Settings are saved per grade file.
+              </p>
+            </div>
+
+            <div class="fieldGrid" id="weightFields">
+              <div class="field cat-weight-field" data-cat="test">
+                <label for="labelTest">
+                  <span class="dot test"></span>
+                  <input type="text" class="catNameInput" id="labelTest" maxlength="48" aria-label="First category name" />
+                </label>
+                <div class="numWrap">
+                  <input class="num" id="wTest" type="number" min="0" max="100" step="0.1" inputmode="decimal" aria-label="First category weight" />
+                  <span class="pctSuffix">%</span>
+                </div>
+              </div>
+              <div class="field cat-weight-field" data-cat="quiz">
+                <label for="labelQuiz">
+                  <span class="dot quiz"></span>
+                  <input type="text" class="catNameInput" id="labelQuiz" maxlength="48" aria-label="Second category name" />
+                </label>
+                <div class="numWrap">
+                  <input class="num" id="wQuiz" type="number" min="0" max="100" step="0.1" inputmode="decimal" aria-label="Second category weight" />
+                  <span class="pctSuffix">%</span>
+                </div>
+              </div>
+              <div class="field cat-weight-field" data-cat="hw" id="fieldHw">
+                <label for="labelHw">
+                  <span class="dot hw"></span>
+                  <input type="text" class="catNameInput" id="labelHw" maxlength="48" aria-label="Third category name" />
+                </label>
+                <div class="numWrap">
+                  <input class="num" id="wHw" type="number" min="0" max="100" step="0.1" inputmode="decimal" aria-label="Third category weight" />
+                  <span class="pctSuffix">%</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="warnLine" id="weightWarn"></div>
+
+            <div class="hr"></div>
+
+            <div class="entriesTop">
+              <div>
+                <h2 style="margin:0;font-size:14px;letter-spacing:-0.01em">Grade entries</h2>
+                <div class="sub" style="margin-top:4px">Add entries like <span class="kbd">85/100</span>. Exempted items are ignored.</div>
+              </div>
+            </div>
+
+            <div class="importSection">
+              <button type="button" class="importToggle" id="importToggle" aria-expanded="false" aria-controls="importBody">
+                <span>Import Grades (PowerSchool)</span>
+                <span class="chev" aria-hidden="true">▼</span>
+              </button>
+              <div class="importBody" id="importBody">
+                <p class="helper" style="margin:12px 0 0">
+                  Paste tab-separated rows copied from PowerSchool. Only rows with a valid x/y score (column 11) are imported.
+                </p>
+                <textarea
+                  class="importTextarea"
+                  id="importTextarea"
+                  placeholder="Paste PowerSchool grade table text here…"
+                  spellcheck="false"
+                ></textarea>
+                <div class="importActions">
+                  <button class="btn primary" type="button" id="importParseBtn">Import</button>
+                </div>
+                <div class="importConfirm" id="importConfirm">
+                  <p id="importSummary"></p>
+                  <div class="row">
+                    <button class="btn primary" type="button" id="importConfirmBtn">Confirm</button>
+                    <button class="btn ghost" type="button" id="importCancelBtn">Cancel</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <form id="addForm" class="entryAdd" autocomplete="off">
+              <input class="input" id="scoreInput" placeholder="e.g. 85/100" aria-label="Score x/y" />
+              <select class="select" id="catInput" aria-label="Category"></select>
+              <button class="btn primary" type="submit">Add entry</button>
+              <button class="btn ghost" id="clearAllBtn" type="button">Clear entries</button>
+            </form>
+
+            <div class="entriesList" id="entriesList" aria-live="polite"></div>
+
+            <div class="hr"></div>
+
+            <h2 style="margin:0;font-size:14px;letter-spacing:-0.01em">Breakdown</h2>
+            <div class="sub" style="margin-top:4px">Per-category raw score, weighted contribution, and active/exempt counts.</div>
+            <div class="breakdown" id="breakdown"></div>
+          </div>
+        </section>
+
+        <aside class="card">
+          <div class="hd">
+            <div>
+              <h2>Prospective grade tool</h2>
+              <div class="sub">“What do I need on an upcoming item to reach a goal overall?”</div>
+            </div>
+          </div>
+          <div class="bd">
+            <form id="needForm" class="entryAdd" style="grid-template-columns: 1fr 1fr; gap: 10px">
+              <select class="select" id="needCat" aria-label="Upcoming category"></select>
+              <input class="input" id="needPts" placeholder="Worth y points (e.g. 100)" inputmode="decimal" />
+              <input class="input" id="needGoal" placeholder="Goal X% (e.g. 92)" inputmode="decimal" />
+              <button class="btn primary" type="submit">Solve</button>
+            </form>
+
+            <div class="helper" style="margin-top:10px">
+              Uses your current weights + entries and assumes the upcoming item is <b>not exempt</b>. Categories with no active entries are still handled via redistribution (including the upcoming one).
+            </div>
+
+            <div class="resultBox" id="needResult" style="display:none"></div>
+
+            <div class="footerRow">
+              <div>Tips: press <span class="kbd">Enter</span> to add an entry.</div>
+              <div id="lastSaved" aria-live="polite"></div>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </div>
+
+    <script>
+      (() => {
+        const STORAGE_KEY_V1 = "gradeCalc.v1";
+        const STORAGE_KEY = "gradeCalc.v2";
+        const DEFAULT_FILE_NAME = "My Grades";
+
+        /** @typedef {"test"|"quiz"|"hw"} CatId */
+        /** @typedef {{id:string, earned:number, possible:number, category:CatId, exempt:boolean, extraCredit:boolean}} Entry */
+        /** @typedef {{test:number,quiz:number,hw:number}} Weights */
+        /** @typedef {{test:string,quiz:string,hw:string}} CategoryLabels */
+        /** @typedef {"two"|"three"} CategoryMode */
+        /** @typedef {{weights:Weights, entries:Entry[], categoryMode:CategoryMode, categoryLabels:CategoryLabels}} AppState */
+        /** @typedef {{id:string, name:string, weights:Weights, entries:Entry[], categoryMode:CategoryMode, categoryLabels:CategoryLabels}} GradeFile */
+        /** @typedef {{activeFileId:string, files:Record<string, GradeFile>}} FileStore */
+
+        const $ = (id) => document.getElementById(id);
+
+        const els = {
+          fileSelect: $("fileSelect"),
+          newFileBtn: $("newFileBtn"),
+          renameFileBtn: $("renameFileBtn"),
+          deleteFileBtn: $("deleteFileBtn"),
+          importToggle: $("importToggle"),
+          importBody: $("importBody"),
+          importTextarea: $("importTextarea"),
+          importParseBtn: $("importParseBtn"),
+          importConfirm: $("importConfirm"),
+          importSummary: $("importSummary"),
+          importConfirmBtn: $("importConfirmBtn"),
+          importCancelBtn: $("importCancelBtn"),
+          categoryMode: $("categoryMode"),
+          labelTest: $("labelTest"),
+          labelQuiz: $("labelQuiz"),
+          labelHw: $("labelHw"),
+          fieldHw: $("fieldHw"),
+          wTest: $("wTest"),
+          wQuiz: $("wQuiz"),
+          wHw: $("wHw"),
+          weightWarn: $("weightWarn"),
+          gradePct: $("gradePct"),
+          gradeLetter: $("gradeLetter"),
+          effWeights: $("effWeights"),
+          activeCount: $("activeCount"),
+          entriesList: $("entriesList"),
+          breakdown: $("breakdown"),
+          addForm: $("addForm"),
+          scoreInput: $("scoreInput"),
+          catInput: $("catInput"),
+          clearAllBtn: $("clearAllBtn"),
+          resetBtn: $("resetBtn"),
+          saveState: $("saveState"),
+          lastSaved: $("lastSaved"),
+          needForm: $("needForm"),
+          needCat: $("needCat"),
+          needPts: $("needPts"),
+          needGoal: $("needGoal"),
+          needResult: $("needResult"),
+        };
+
+        const ALL_CATS = /** @type {CatId[]} */ (["test", "quiz", "hw"]);
+
+        const CATEGORY_STYLE = {
+          test: { colorClass: "cat-test", dotClass: "test" },
+          quiz: { colorClass: "cat-quiz", dotClass: "quiz" },
+          hw: { colorClass: "cat-hw", dotClass: "hw" },
+        };
+
+        const defaultWeights = { test: 70, quiz: 20, hw: 10 };
+        const defaultWeightsTwo = { test: 70, quiz: 30, hw: 0 };
+
+        /** @param {CategoryMode} mode */
+        function getDefaultLabels(mode) {
+          return mode === "two"
+            ? { test: "Summative", quiz: "Formative", hw: "Homework" }
+            : { test: "Tests", quiz: "Quizzes", hw: "Homework" };
+        }
+
+        /** @param {CategoryMode} mode */
+        function getDefaultWeights(mode) {
+          return mode === "two" ? { ...defaultWeightsTwo } : { ...defaultWeights };
+        }
+
+        const defaultState = /** @type {AppState} */ ({
+          weights: getDefaultWeights("three"),
+          entries: [],
+          categoryMode: "three",
+          categoryLabels: getDefaultLabels("three"),
+        });
+
+        /** @param {GradeFile} file */
+        function getActiveCategoryIds(file) {
+          return file.categoryMode === "two" ? /** @type {CatId[]} */ (["test", "quiz"]) : ALL_CATS;
+        }
+
+        /** @param {GradeFile} file @param {CatId} cat */
+        function getCategoryLabel(file, cat) {
+          return file.categoryLabels[cat] || getDefaultLabels(file.categoryMode)[cat];
+        }
+
+        /** @param {GradeFile} file */
+        function applyCategorySettings(file) {
+          const mode = file.categoryMode === "two" ? "two" : "three";
+          const defs = getDefaultLabels(mode);
+          const raw = file.categoryLabels || {};
+          file.categoryMode = mode;
+          file.categoryLabels = {
+            test: String(raw.test ?? defs.test).trim() || defs.test,
+            quiz: String(raw.quiz ?? defs.quiz).trim() || defs.quiz,
+            hw: String(raw.hw ?? defs.hw).trim() || defs.hw,
+          };
+        }
+
+        /** @param {string} label */
+        function abbrevLabel(label) {
+          const t = label.trim();
+          if (t.length <= 5) return t;
+          return t.slice(0, 4) + ".";
+        }
+
+        /** @type {FileStore} */
+        let store;
+
+        /** @type {GradeFile} */
+        let currentFile;
+
+        /** @type {Entry[] | null} */
+        let pendingImport = null;
+
+        /** @returns {string} */
+        function uid() {
+          return Math.random().toString(16).slice(2) + Date.now().toString(16);
+        }
+
+        /** @returns {number} */
+        function clamp(n, lo, hi) {
+          return Math.min(hi, Math.max(lo, n));
+        }
+
+        /** @returns {number} */
+        function round1(n) {
+          return Math.round(n * 10) / 10;
+        }
+
+        /** @returns {string} */
+        function fmtPct(n) {
+          if (!Number.isFinite(n)) return "—";
+          return `${round1(n).toFixed(1)}%`;
+        }
+
+        /** @returns {string} */
+        function letterGrade(pct) {
+          if (!Number.isFinite(pct)) return "—";
+          if (pct >= 90) return "A";
+          if (pct >= 80) return "B";
+          if (pct >= 70) return "C";
+          if (pct >= 60) return "D";
+          return "F";
+        }
+
+        /** @template T @param {T} obj @returns {T} */
+        function deepClone(obj) {
+          // Prefer native structuredClone when available; fall back to JSON.
+          // This state is JSON-serializable (numbers, booleans, strings, arrays, objects).
+          if (typeof structuredClone === "function") return structuredClone(obj);
+          return /** @type {T} */ (JSON.parse(JSON.stringify(obj)));
+        }
+
+        /**
+         * Parse "x/y" allowing spaces and decimals. "x/0" is extra credit.
+         * @param {string} s
+         * @returns {{earned:number, possible:number, extraCredit:boolean} | null}
+         */
+        function parseFraction(s) {
+          const raw = (s || "").trim();
+          const m = raw.match(/^(-?\d+(?:\.\d+)?)\s*\/\s*(\d+(?:\.\d+)?)$/);
+          if (!m) return null;
+          const earned = Number(m[1]);
+          const possible = Number(m[2]);
+          if (!Number.isFinite(earned) || !Number.isFinite(possible)) return null;
+          if (possible === 0) return { earned, possible: 0, extraCredit: true };
+          if (possible < 0) return null;
+          return { earned, possible, extraCredit: false };
+        }
+
+        /** @param {string} s */
+        function isValidScore(s) {
+          return parseFraction(s) !== null;
+        }
+
+        /** @param {Entry | {extraCredit?:boolean, possible:number}} e */
+        function isExtraCreditEntry(e) {
+          return Boolean(e.extraCredit) || e.possible === 0;
+        }
+
+        /** @param {unknown} w */
+        function normalizeWeights(w) {
+          const o = /** @type {Record<string, unknown>} */ (w || {});
+          return {
+            test: Number.isFinite(Number(o.test)) ? Number(o.test) : 70,
+            quiz: Number.isFinite(Number(o.quiz)) ? Number(o.quiz) : 20,
+            hw: Number.isFinite(Number(o.hw)) ? Number(o.hw) : 10,
+          };
+        }
+
+        /** @param {unknown} entries */
+        function normalizeEntries(entries) {
+          if (!Array.isArray(entries)) return [];
+          return entries
+            .map((e) => {
+              const possible = Number(e.possible);
+              const earned = Number(e.earned);
+              const extraCredit = Boolean(e.extraCredit) || (possible === 0 && Number.isFinite(earned));
+              return {
+                id: String(e.id || uid()),
+                earned,
+                possible: extraCredit ? 0 : possible,
+                category: e.category === "quiz" || e.category === "hw" || e.category === "test" ? e.category : "test",
+                exempt: Boolean(e.exempt),
+                extraCredit,
+              };
+            })
+            .filter((e) => {
+              if (!Number.isFinite(e.earned)) return false;
+              if (e.extraCredit) return true;
+              return Number.isFinite(e.possible) && e.possible > 0;
+            });
+        }
+
+        /** @param {string} name @param {Partial<AppState>} data */
+        function createGradeFile(name, data) {
+          const mode = data.categoryMode === "two" ? "two" : "three";
+          const file = {
+            id: uid(),
+            name: name.trim() || DEFAULT_FILE_NAME,
+            weights: normalizeWeights(data.weights || getDefaultWeights(mode)),
+            entries: normalizeEntries(data.entries),
+            categoryMode: mode,
+            categoryLabels: { ...getDefaultLabels(mode), ...(data.categoryLabels || {}) },
+          };
+          applyCategorySettings(file);
+          return file;
+        }
+
+        /** @returns {FileStore} */
+        function createDefaultStore() {
+          const file = createGradeFile(DEFAULT_FILE_NAME, defaultState);
+          return { activeFileId: file.id, files: { [file.id]: file } };
+        }
+
+        /** @param {unknown} raw */
+        function parseV1State(raw) {
+          const parsed = typeof raw === "string" ? JSON.parse(raw) : raw;
+          const w = parsed?.weights || {};
+          return {
+            weights: normalizeWeights(w),
+            entries: normalizeEntries(parsed?.entries),
+            categoryMode: "three",
+            categoryLabels: getDefaultLabels("three"),
+          };
+        }
+
+        /** @param {unknown} parsed */
+        function normalizeStore(parsed) {
+          const filesIn = parsed?.files && typeof parsed.files === "object" ? parsed.files : {};
+          const files = /** @type {Record<string, GradeFile>} */ ({});
+          for (const key of Object.keys(filesIn)) {
+            const f = filesIn[key];
+            if (!f || typeof f !== "object") continue;
+            const id = String(f.id || key);
+            const file = {
+              id,
+              name: String(f.name || DEFAULT_FILE_NAME).trim() || DEFAULT_FILE_NAME,
+              weights: normalizeWeights(f.weights),
+              entries: normalizeEntries(f.entries),
+              categoryMode: f.categoryMode === "two" ? "two" : "three",
+              categoryLabels: {
+                test: String(f.categoryLabels?.test ?? ""),
+                quiz: String(f.categoryLabels?.quiz ?? ""),
+                hw: String(f.categoryLabels?.hw ?? ""),
+              },
+            };
+            applyCategorySettings(file);
+            files[id] = file;
+          }
+          if (Object.keys(files).length === 0) return createDefaultStore();
+          let activeFileId = String(parsed?.activeFileId || "");
+          if (!files[activeFileId]) activeFileId = Object.keys(files)[0];
+          return { activeFileId, files };
+        }
+
+        /** @returns {FileStore} */
+        function loadStore() {
+          try {
+            const rawV2 = localStorage.getItem(STORAGE_KEY);
+            if (rawV2) return normalizeStore(JSON.parse(rawV2));
+
+            const rawV1 = localStorage.getItem(STORAGE_KEY_V1);
+            if (rawV1) {
+              const data = parseV1State(rawV1);
+              const file = createGradeFile(DEFAULT_FILE_NAME, data);
+              const migrated = { activeFileId: file.id, files: { [file.id]: file } };
+              localStorage.setItem(STORAGE_KEY, JSON.stringify(migrated));
+              return migrated;
+            }
+          } catch {
+            /* fall through */
+          }
+          return createDefaultStore();
+        }
+
+        function saveStore() {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(store));
+          setSavedUI();
+        }
+
+        /** @returns {GradeFile} */
+        function getActiveFile() {
+          return store.files[store.activeFileId];
+        }
+
+        function setCurrentFile() {
+          currentFile = getActiveFile();
+        }
+
+        /** @returns {AppState} */
+        function fileAsState(file) {
+          return { weights: file.weights, entries: file.entries };
+        }
+
+        function renderFileSelect() {
+          const ids = Object.keys(store.files).sort((a, b) =>
+            store.files[a].name.localeCompare(store.files[b].name, undefined, { sensitivity: "base" })
+          );
+          els.fileSelect.innerHTML = ids
+            .map((id) => {
+              const f = store.files[id];
+              const selected = id === store.activeFileId ? " selected" : "";
+              return `<option value="${esc(id)}"${selected}>${esc(f.name)}</option>`;
+            })
+            .join("");
+        }
+
+        /** @param {string} id */
+        function switchToFile(id) {
+          if (!store.files[id] || id === store.activeFileId) return;
+          saveStore();
+          store.activeFileId = id;
+          setCurrentFile();
+          saveStore();
+          renderFileSelect();
+          syncWeightInputs(currentFile);
+          renderCategoryUI();
+          hideImportConfirm();
+          updateAll();
+        }
+
+        function promptFileName(title, defaultValue) {
+          const name = window.prompt(title, defaultValue || "");
+          if (name === null) return null;
+          const trimmed = name.trim();
+          return trimmed || DEFAULT_FILE_NAME;
+        }
+
+        function createNewFile() {
+          const name = promptFileName("Name for the new grade file:", "New Class");
+          if (name === null) return;
+          saveStore();
+          const file = createGradeFile(name, deepClone(defaultState));
+          store.files[file.id] = file;
+          store.activeFileId = file.id;
+          setCurrentFile();
+          saveStore();
+          renderFileSelect();
+          syncWeightInputs(currentFile);
+          renderCategoryUI();
+          hideImportConfirm();
+          updateAll();
+        }
+
+        function renameCurrentFile() {
+          const name = promptFileName("Rename grade file:", currentFile.name);
+          if (name === null) return;
+          currentFile.name = name;
+          saveStore();
+          renderFileSelect();
+        }
+
+        function deleteCurrentFile() {
+          const fileName = currentFile.name;
+          if (!window.confirm(`Delete "${fileName}"? This cannot be undone.`)) return;
+
+          const ids = Object.keys(store.files);
+          delete store.files[store.activeFileId];
+
+          const remaining = Object.keys(store.files);
+          if (remaining.length === 0) {
+            const file = createGradeFile(DEFAULT_FILE_NAME, deepClone(defaultState));
+            store.files[file.id] = file;
+            store.activeFileId = file.id;
+          } else {
+            store.activeFileId = remaining[0];
+          }
+
+          setCurrentFile();
+          saveStore();
+          renderFileSelect();
+          syncWeightInputs(currentFile);
+          renderCategoryUI();
+          hideImportConfirm();
+          updateAll();
+        }
+
+        /**
+         * @param {string} catLabelRaw
+         * @param {GradeFile} file
+         * @returns {CatId}
+         */
+        function categoryFromPowerSchool(catLabelRaw, file) {
+          const raw = (catLabelRaw || "").trim();
+          const lower = raw.toLowerCase();
+          const labels = file.categoryLabels;
+
+          if (lower === "test" || lower === "summative") return "test";
+          if (lower === "quiz" || lower === "formative") return "quiz";
+          if (lower === "homework") return file.categoryMode === "two" ? "quiz" : "hw";
+
+          if (raw && raw.toLowerCase() === labels.test.toLowerCase()) return "test";
+          if (raw && raw.toLowerCase() === labels.quiz.toLowerCase()) return "quiz";
+          if (raw && raw.toLowerCase() === labels.hw.toLowerCase()) return "hw";
+
+          return file.categoryMode === "two" ? "quiz" : "hw";
+        }
+
+        /**
+         * @param {string} text
+         * @param {GradeFile} file
+         * @returns {Omit<Entry, "id"|"exempt">[]}
+         */
+        function parsePowerSchoolPaste(text, file) {
+          const lines = String(text || "")
+            .split(/\r?\n/)
+            .map((l) => l.trim())
+            .filter(Boolean);
+
+          const out = [];
+          for (const line of lines) {
+            const cols = line.split("\t");
+            if (cols.length < 11) continue;
+
+            // Score is column 11 (0-based index 10) in PowerSchool exports; try 10 then 11.
+            let scoreRaw = "";
+            for (const idx of [10, 11]) {
+              const candidate = (cols[idx] || "").trim();
+              if (isValidScore(candidate)) {
+                scoreRaw = candidate;
+                break;
+              }
+            }
+            const parsed = parseFraction(scoreRaw);
+            if (!parsed) continue;
+
+            out.push({
+              earned: parsed.earned,
+              possible: parsed.possible,
+              extraCredit: parsed.extraCredit,
+              category: categoryFromPowerSchool(cols[1], file),
+            });
+          }
+          return out;
+        }
+
+        function hideImportConfirm() {
+          pendingImport = null;
+          els.importConfirm.classList.remove("show");
+          els.importSummary.textContent = "";
+        }
+
+        function showImportConfirm(entries) {
+          const total = entries.length;
+
+          if (total === 0) {
+            hideImportConfirm();
+            window.alert("No valid grade rows found. Make sure you pasted tab-separated PowerSchool text with scores in x/y format.");
+            return;
+          }
+
+          pendingImport = entries.map((e) => ({
+            id: uid(),
+            earned: e.earned,
+            possible: e.possible,
+            category: e.category,
+            exempt: false,
+            extraCredit: Boolean(e.extraCredit),
+          }));
+
+          const activeIds = getActiveCategoryIds(currentFile);
+          const parts = activeIds.map((c) => {
+            const n = entries.filter((e) => e.category === c).length;
+            return `${n} ${getCategoryLabel(currentFile, c)}`;
+          });
+          els.importSummary.textContent = `Found ${total} entries: ${parts.join(", ")}. Import all?`;
+          els.importConfirm.classList.add("show");
+        }
+
+        function confirmImport() {
+          if (!pendingImport || pendingImport.length === 0) return;
+          // List UI shows newest array items first; reverse on insert preserves paste top-to-bottom order.
+          currentFile.entries.push(...pendingImport.slice().reverse());
+          saveStore();
+          els.importTextarea.value = "";
+          hideImportConfirm();
+          updateAll();
+        }
+
+        let saveTimer = /** @type {number | null} */ (null);
+        function setSavedUI() {
+          els.saveState.textContent = "Saved";
+          const now = new Date();
+          els.lastSaved.textContent = `Saved ${now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`;
+          if (saveTimer) window.clearTimeout(saveTimer);
+          saveTimer = window.setTimeout(() => {
+            els.saveState.textContent = "Ready";
+          }, 1200);
+        }
+
+        /** @param {number} n */
+        function numOr0(n) {
+          return Number.isFinite(n) ? n : 0;
+        }
+
+        /**
+         * Compute per-category totals and active/exempt counts.
+         * @param {Entry[]} entries
+         * @param {CatId[]} activeIds
+         */
+        function computeCategoryStats(entries, activeIds) {
+          const init = () => ({ earned: 0, possible: 0, active: 0, exempt: 0 });
+          const stats = { test: init(), quiz: init(), hw: init() };
+
+          for (const e of entries) {
+            if (!ALL_CATS.includes(e.category)) continue;
+            if (e.exempt) {
+              stats[e.category].exempt += 1;
+              continue;
+            }
+            if (!activeIds.includes(e.category)) continue;
+            stats[e.category].active += 1;
+            if (isExtraCreditEntry(e)) {
+              stats[e.category].earned += e.earned;
+            } else {
+              stats[e.category].earned += e.earned;
+              stats[e.category].possible += e.possible;
+            }
+          }
+          return stats;
+        }
+
+        /**
+         * Returns effective weights after excluding empty categories (no active entries),
+         * redistributing their weight proportionally among remaining active categories.
+         * @param {Weights} baseWeights
+         * @param {ReturnType<typeof computeCategoryStats>} stats
+         * @param {CatId[]} activeIds
+         */
+        function computeEffectiveWeights(baseWeights, stats, activeIds) {
+          const activeCats = activeIds.filter((c) => stats[c].active > 0);
+          if (activeCats.length === 0) return { test: 0, quiz: 0, hw: 0 };
+
+          const activeWeightSum = activeCats.reduce((acc, c) => acc + numOr0(baseWeights[c]), 0);
+          if (activeWeightSum <= 0) return { test: 0, quiz: 0, hw: 0 };
+
+          const out = { test: 0, quiz: 0, hw: 0 };
+          for (const c of activeCats) {
+            out[c] = (numOr0(baseWeights[c]) / activeWeightSum) * 100;
+          }
+          return out;
+        }
+
+        /**
+         * Calculate overall grade percentage (0..100) using effective weights.
+         * @param {Weights} baseWeights
+         * @param {Entry[]} entries
+         * @param {CatId[]} activeIds
+         */
+        function calculateOverall(baseWeights, entries, activeIds) {
+          const stats = computeCategoryStats(entries, activeIds);
+          const effW = computeEffectiveWeights(baseWeights, stats, activeIds);
+
+          let overall = 0;
+          const perCat = /** @type {Record<CatId, {rawPct:number|null, weighted:number, weight:number}>} */ ({
+            test: { rawPct: null, weighted: 0, weight: effW.test },
+            quiz: { rawPct: null, weighted: 0, weight: effW.quiz },
+            hw: { rawPct: null, weighted: 0, weight: effW.hw },
+          });
+
+          for (const cat of activeIds) {
+            const possible = stats[cat].possible;
+            if (stats[cat].active <= 0 || possible <= 0 || effW[cat] <= 0) {
+              perCat[cat].rawPct = null;
+              perCat[cat].weighted = 0;
+              continue;
+            }
+            const rawPct = (stats[cat].earned / possible) * 100;
+            const weighted = (rawPct * effW[cat]) / 100;
+            perCat[cat].rawPct = rawPct;
+            perCat[cat].weighted = weighted;
+            overall += weighted;
+          }
+
+          const activeTotal = activeIds.reduce((acc, c) => acc + stats[c].active, 0);
+          return { overall, stats, effW, perCat, activeTotal };
+        }
+
+        /** @param {string} s */
+        function esc(s) {
+          return String(s).replace(/[&<>"']/g, (ch) => {
+            if (ch === "&") return "&amp;";
+            if (ch === "<") return "&lt;";
+            if (ch === ">") return "&gt;";
+            if (ch === '"') return "&quot;";
+            return "&#39;";
+          });
+        }
+
+        /** @param {CatId} c */
+        function catLabel(c) {
+          return getCategoryLabel(currentFile, c);
+        }
+
+        function renderCategoryUI() {
+          const file = currentFile;
+          els.categoryMode.value = file.categoryMode;
+          els.labelTest.value = file.categoryLabels.test;
+          els.labelQuiz.value = file.categoryLabels.quiz;
+          els.labelHw.value = file.categoryLabels.hw;
+          els.fieldHw.classList.toggle("hidden", file.categoryMode === "two");
+
+          const activeIds = getActiveCategoryIds(file);
+          const opts = activeIds
+            .map((c) => `<option value="${esc(c)}">${esc(getCategoryLabel(file, c))}</option>`)
+            .join("");
+          els.catInput.innerHTML = opts;
+          els.needCat.innerHTML = opts;
+        }
+
+        function readCategoryLabelsFromInputs() {
+          const defs = getDefaultLabels(currentFile.categoryMode);
+          currentFile.categoryLabels = {
+            test: els.labelTest.value.trim() || defs.test,
+            quiz: els.labelQuiz.value.trim() || defs.quiz,
+            hw: els.labelHw.value.trim() || defs.hw,
+          };
+        }
+
+        /** @param {GradeFile | AppState} file */
+        function syncWeightInputs(file) {
+          els.wTest.value = String(file.weights.test);
+          els.wQuiz.value = String(file.weights.quiz);
+          els.wHw.value = String(file.weights.hw);
+        }
+
+        /** @param {GradeFile | AppState} file */
+        function readWeightsFromInputs(file) {
+          const wTest = clamp(Number(els.wTest.value), 0, 100);
+          const wQuiz = clamp(Number(els.wQuiz.value), 0, 100);
+          const wHw = clamp(Number(els.wHw.value), 0, 100);
+          file.weights = {
+            test: Number.isFinite(wTest) ? wTest : 0,
+            quiz: Number.isFinite(wQuiz) ? wQuiz : 0,
+            hw: Number.isFinite(wHw) ? wHw : 0,
+          };
+        }
+
+        /**
+         * @param {AppState} state
+         * @param {ReturnType<typeof calculateOverall>} calc
+         */
+        function render(state, calc) {
+          const activeIds = getActiveCategoryIds(currentFile);
+          const wSum = activeIds.reduce((acc, c) => acc + numOr0(state.weights[c]), 0);
+          const sumOk = Math.abs(wSum - 100) < 0.01;
+          els.weightWarn.classList.toggle("show", !sumOk);
+          if (!sumOk) {
+            els.weightWarn.textContent = `Weights should sum to 100%. Current total: ${round1(wSum).toFixed(1)}%. (Calculations still use your values; empty categories are redistributed.)`;
+          } else {
+            els.weightWarn.textContent = "";
+          }
+
+          if (calc.activeTotal <= 0) {
+            els.gradePct.textContent = "—";
+            els.gradeLetter.textContent = "Add entries to calculate your grade.";
+          } else {
+            const pct = calc.overall;
+            els.gradePct.textContent = fmtPct(pct);
+            els.gradeLetter.textContent = `Letter grade: ${letterGrade(pct)}`;
+          }
+
+          const eff = calc.effW;
+          const effTxt = activeIds
+            .map((c) => `${abbrevLabel(getCategoryLabel(currentFile, c))} ${round1(eff[c]).toFixed(1)}%`)
+            .join(" · ");
+          els.effWeights.textContent = calc.activeTotal > 0 ? effTxt : "—";
+
+          els.activeCount.textContent = String(calc.activeTotal);
+
+          els.entriesList.innerHTML = state.entries
+            .slice()
+            .reverse()
+            .map((e) => renderEntry(e))
+            .join("");
+
+          els.breakdown.innerHTML = activeIds.map((cat) => renderCatRow(cat, state.weights, calc)).join("");
+        }
+
+        /** @param {Entry} e */
+        function renderEntry(e) {
+          const style = CATEGORY_STYLE[e.category];
+          const badgeClass = `badge ${style.colorClass}`;
+          const label = getCategoryLabel(currentFile, e.category);
+          const activeIds = getActiveCategoryIds(currentFile);
+          const inactive = !activeIds.includes(e.category);
+          const ec = isExtraCreditEntry(e);
+          const score = ec ? `${round1(e.earned).toFixed(1)} pts` : `${e.earned}/${e.possible}`;
+          const pctStr = ec ? "" : `${round1((e.earned / e.possible) * 100).toFixed(1)}%`;
+          const inactiveNote = inactive ? `<div class="scoreSub inactiveNote">Not counted (2-category mode)</div>` : "";
+          const ecBadge = ec ? `<span class="ecBadge">Extra Credit</span>` : "";
+          return `
+            <div class="entry ${e.exempt ? "exempt" : ""} ${inactive ? "inactiveCat" : ""} ${ec ? "extraCreditEntry" : ""}" data-entry-id="${esc(e.id)}">
+              <div class="meta">
+                <div class="scoreText">${esc(score)}</div>
+                ${pctStr ? `<div class="scoreSub">${esc(pctStr)}</div>` : ""}
+                ${ecBadge}
+                ${inactiveNote}
+              </div>
+              <div class="${badgeClass}">
+                <span class="catChip" aria-hidden="true"></span>
+                <span class="txt">${esc(label)}</span>
+              </div>
+              <div class="toggle" role="button" tabindex="0" data-action="toggleExempt" data-on="${e.exempt ? "true" : "false"}">
+                ${e.exempt ? "Exempt" : "Active"} <small>${e.exempt ? "(ignored)" : "(counting)"}</small>
+              </div>
+              <button class="btn danger" type="button" data-action="deleteEntry">Delete</button>
+            </div>
+          `;
+        }
+
+        /**
+         * @param {CatId} cat
+         * @param {Weights} baseWeights
+         * @param {ReturnType<typeof calculateOverall>} calc
+         */
+        function renderCatRow(cat, baseWeights, calc) {
+          const stats = calc.stats[cat];
+          const rawPct = calc.perCat[cat].rawPct;
+          const weighted = calc.perCat[cat].weighted;
+          const effW = calc.effW[cat];
+          const baseW = numOr0(baseWeights[cat]);
+          const name = getCategoryLabel(currentFile, cat);
+
+          const rawStr =
+            stats.active > 0 && stats.possible > 0
+              ? `${round1((stats.earned / stats.possible) * 100).toFixed(1)}% (${round1(stats.earned).toFixed(1)}/${round1(stats.possible).toFixed(1)})`
+              : stats.active > 0
+                ? `+${round1(stats.earned).toFixed(1)} pts extra credit (no points possible)`
+                : "—";
+          const contribStr = stats.active > 0 ? `${round1(weighted).toFixed(1)} pts` : "0.0 pts";
+
+          const note =
+            stats.active > 0
+              ? `Raw: ${rawStr} · Effective weight: ${round1(effW).toFixed(1)}% (base ${round1(baseW).toFixed(1)}%) · Entries: ${stats.active} active / ${stats.exempt} exempt`
+              : `No active entries. Entries: 0 active / ${stats.exempt} exempt · Base weight: ${round1(baseW).toFixed(1)}% (redistributed)`;
+
+          const style = CATEGORY_STYLE[cat];
+          return `
+            <div class="catRow ${style.colorClass}">
+              <div class="left">
+                <div class="name"><span class="dot ${style.dotClass}" aria-hidden="true"></span>${esc(name)}</div>
+                <div class="details">${esc(note)}</div>
+              </div>
+              <div class="right">
+                <div class="big">${rawPct == null ? "—" : fmtPct(rawPct)}</div>
+                <div class="small">Contribution: ${esc(contribStr)}</div>
+              </div>
+            </div>
+          `;
+        }
+
+        /**
+         * Solve: required earned points on an upcoming item (category cat, possible y) to reach goal%.
+         * @param {AppState} state
+         * @param {CatId} cat
+         * @param {number} upcomingPossible
+         * @param {number} goalPct
+         * @param {CatId[]} activeIds
+         */
+        function solveNeeded(state, cat, upcomingPossible, goalPct, activeIds) {
+          if (!activeIds.includes(cat)) {
+            return { ok: false, reason: "That category is not enabled for this grade file." };
+          }
+
+          const entriesNow = state.entries.slice();
+          const upcomingExtra = upcomingPossible === 0;
+
+          const stats = computeCategoryStats(entriesNow, activeIds);
+          stats[cat].active += 1;
+          if (!upcomingExtra) {
+            stats[cat].possible += upcomingPossible;
+          }
+
+          const effW = computeEffectiveWeights(state.weights, stats, activeIds);
+          const effSum = activeIds.reduce((acc, c) => acc + effW[c], 0);
+          if (effSum <= 0) {
+            return { ok: false, reason: "No active categories to compute a grade." };
+          }
+
+          let fixed = 0;
+          for (const c of activeIds) {
+            if (c === cat) continue;
+            const s = stats[c];
+            if (s.active <= 0 || s.possible <= 0 || effW[c] <= 0) continue;
+            const raw = (s.earned / s.possible) * 100;
+            fixed += (raw * effW[c]) / 100;
+          }
+
+          const currentStats = computeCategoryStats(entriesNow, activeIds)[cat];
+          const E = currentStats.earned;
+          const P = currentStats.possible;
+          const y = upcomingPossible;
+          const w = effW[cat];
+
+          if (w <= 0) {
+            return { ok: false, reason: `That category has 0% effective weight in your current setup.` };
+          }
+
+          if (upcomingExtra) {
+            if (P <= 0) {
+              return {
+                ok: false,
+                reason: `Add at least one graded ${catLabel(cat)} item (non–extra credit) before solving for extra credit.`,
+              };
+            }
+            const target = (goalPct - fixed) / w;
+            const requiredBonus = target * P - E;
+            const needed = Math.max(0, requiredBonus);
+            const withZeroBonus = fixed + (E / P) * w;
+
+            return {
+              ok: true,
+              fixed,
+              effW,
+              requiredRaw: requiredBonus,
+              neededClamped: needed,
+              upcomingExtra: true,
+              impossibleHigh: false,
+              alreadyMetEvenWithZero: withZeroBonus + 1e-9 >= goalPct,
+            };
+          }
+
+          const target = (goalPct - fixed) / w;
+          const requiredEarned = (P + y) * target - E;
+          const r = requiredEarned;
+          const needed = clamp(r, 0, y);
+          const possibleWithPerfect = fixed + ((E + y) / (P + y)) * w;
+          const possibleWithZero = fixed + (E / (P + y)) * w;
+
+          return {
+            ok: true,
+            fixed,
+            effW,
+            requiredRaw: r,
+            neededClamped: needed,
+            upcomingExtra: false,
+            impossibleHigh: possibleWithPerfect + 1e-9 < goalPct,
+            alreadyMetEvenWithZero: possibleWithZero + 1e-9 >= goalPct,
+          };
+        }
+
+        function setHandlers() {
+          const weightInputs = [els.wTest, els.wQuiz, els.wHw];
+          for (const inp of weightInputs) {
+            inp.addEventListener("input", () => {
+              readWeightsFromInputs(currentFile);
+              saveStore();
+              updateAll();
+            });
+            inp.addEventListener("change", () => {
+              readWeightsFromInputs(currentFile);
+              saveStore();
+              updateAll();
+            });
+          }
+
+          els.fileSelect.addEventListener("change", () => {
+            switchToFile(els.fileSelect.value);
+          });
+
+          els.newFileBtn.addEventListener("click", createNewFile);
+          els.renameFileBtn.addEventListener("click", renameCurrentFile);
+          els.deleteFileBtn.addEventListener("click", deleteCurrentFile);
+
+          els.importToggle.addEventListener("click", () => {
+            const open = els.importBody.classList.toggle("open");
+            els.importToggle.setAttribute("aria-expanded", open ? "true" : "false");
+          });
+
+          els.importParseBtn.addEventListener("click", () => {
+            const parsed = parsePowerSchoolPaste(els.importTextarea.value, currentFile);
+            showImportConfirm(parsed);
+          });
+
+          els.categoryMode.addEventListener("change", () => {
+            const newMode = els.categoryMode.value === "two" ? "two" : "three";
+            const oldMode = currentFile.categoryMode;
+            currentFile.categoryMode = newMode;
+
+            if (oldMode !== newMode) {
+              const oldDefs = getDefaultLabels(oldMode);
+              const lbl = currentFile.categoryLabels;
+              const stillDefault =
+                lbl.test === oldDefs.test && lbl.quiz === oldDefs.quiz && lbl.hw === oldDefs.hw;
+              if (stillDefault) {
+                currentFile.categoryLabels = { ...getDefaultLabels(newMode) };
+              }
+              if (newMode === "two") {
+                const w = currentFile.weights;
+                const pairSum = w.test + w.quiz;
+                if (pairSum > 0) {
+                  const total = pairSum + w.hw;
+                  w.test = (w.test / pairSum) * total;
+                  w.quiz = (w.quiz / pairSum) * total;
+                } else {
+                  w.test = 70;
+                  w.quiz = 30;
+                }
+                w.hw = 0;
+              }
+            }
+
+            saveStore();
+            renderCategoryUI();
+            syncWeightInputs(currentFile);
+            updateAll();
+          });
+
+          for (const inp of [els.labelTest, els.labelQuiz, els.labelHw]) {
+            inp.addEventListener("change", () => {
+              readCategoryLabelsFromInputs();
+              saveStore();
+              renderCategoryUI();
+              updateAll();
+            });
+          }
+
+          els.importConfirmBtn.addEventListener("click", confirmImport);
+          els.importCancelBtn.addEventListener("click", hideImportConfirm);
+
+          els.addForm.addEventListener("submit", (ev) => {
+            ev.preventDefault();
+            const parsed = parseFraction(els.scoreInput.value);
+            if (!parsed) {
+              els.scoreInput.focus();
+              els.scoreInput.select?.();
+              return;
+            }
+            const category = /** @type {"test"|"quiz"|"hw"} */ (els.catInput.value);
+            currentFile.entries.push({
+              id: uid(),
+              earned: parsed.earned,
+              possible: parsed.possible,
+              category,
+              exempt: false,
+              extraCredit: parsed.extraCredit,
+            });
+            els.scoreInput.value = "";
+            saveStore();
+            updateAll();
+            els.scoreInput.focus();
+          });
+
+          els.clearAllBtn.addEventListener("click", () => {
+            currentFile.entries = [];
+            saveStore();
+            updateAll();
+          });
+
+          els.resetBtn.addEventListener("click", () => {
+            const next = deepClone(defaultState);
+            currentFile.weights = next.weights;
+            currentFile.entries = next.entries;
+            currentFile.categoryMode = next.categoryMode;
+            currentFile.categoryLabels = { ...next.categoryLabels };
+            applyCategorySettings(currentFile);
+            syncWeightInputs(currentFile);
+            renderCategoryUI();
+            saveStore();
+            updateAll();
+          });
+
+          els.entriesList.addEventListener("click", (ev) => {
+            const t = /** @type {HTMLElement} */ (ev.target);
+            const entryEl = t.closest("[data-entry-id]");
+            if (!entryEl) return;
+            const id = entryEl.getAttribute("data-entry-id");
+            if (!id) return;
+
+            const actionEl = t.closest("[data-action]");
+            const action = actionEl?.getAttribute("data-action");
+            if (!action) return;
+
+            if (action === "deleteEntry") {
+              currentFile.entries = currentFile.entries.filter((e) => e.id !== id);
+              saveStore();
+              updateAll();
+              return;
+            }
+
+            if (action === "toggleExempt") {
+              const e = currentFile.entries.find((x) => x.id === id);
+              if (!e) return;
+              e.exempt = !e.exempt;
+              saveStore();
+              updateAll();
+              return;
+            }
+          });
+
+          els.entriesList.addEventListener("keydown", (ev) => {
+            if (ev.key !== "Enter" && ev.key !== " ") return;
+            const t = /** @type {HTMLElement} */ (ev.target);
+            const actionEl = t.closest("[data-action]");
+            if (!actionEl) return;
+            const entryEl = t.closest("[data-entry-id]");
+            if (!entryEl) return;
+            const id = entryEl.getAttribute("data-entry-id");
+            const action = actionEl.getAttribute("data-action");
+            if (!id || !action) return;
+            if (action === "toggleExempt") {
+              ev.preventDefault();
+              const e = currentFile.entries.find((x) => x.id === id);
+              if (!e) return;
+              e.exempt = !e.exempt;
+              saveStore();
+              updateAll();
+            }
+          });
+
+          els.needForm.addEventListener("submit", (ev) => {
+            ev.preventDefault();
+            const cat = /** @type {"test"|"quiz"|"hw"} */ (els.needCat.value);
+            const ptsRaw = String(els.needPts.value).trim();
+            const parsedPts = parseFraction(ptsRaw);
+            const upcomingExtra = parsedPts?.extraCredit === true || ptsRaw === "0" || Number(ptsRaw) === 0;
+            const y = upcomingExtra ? 0 : Number(ptsRaw);
+            const goal = Number(String(els.needGoal.value).trim());
+
+            if (!Number.isFinite(goal)) {
+              showNeedResult("bad", "Please enter a valid goal percentage.", "Example: worth 100 points, goal 92.");
+              return;
+            }
+            if (!upcomingExtra && (!Number.isFinite(y) || y <= 0)) {
+              showNeedResult("bad", "Please enter valid numbers for points and goal.", "Example: worth 100 points, goal 92. Use 0 or x/0 for extra credit.");
+              return;
+            }
+
+            const activeIds = getActiveCategoryIds(currentFile);
+            const appState = fileAsState(currentFile);
+            const calcNow = calculateOverall(appState.weights, appState.entries, activeIds);
+            if (calcNow.activeTotal <= 0) {
+              const wSum = activeIds.reduce((acc, c) => acc + appState.weights[c], 0);
+              if (wSum <= 0) {
+                showNeedResult("bad", "Your weights sum to 0%.", "Set weights to calculate a grade.");
+                return;
+              }
+            }
+
+            const sol = solveNeeded(appState, cat, y, goal, activeIds);
+            if (!sol.ok) {
+              showNeedResult("bad", "Couldn’t solve with the current setup.", sol.reason || "");
+              return;
+            }
+
+            if (sol.upcomingExtra) {
+              if (sol.alreadyMetEvenWithZero) {
+                showNeedResult(
+                  "ok",
+                  `You’d reach ${round1(goal).toFixed(1)}% overall without any extra credit on that upcoming ${catLabel(cat)}.`,
+                  "Your current grade buffer is already high enough."
+                );
+                return;
+              }
+              const needed = sol.neededClamped;
+              const line = `You need ${round1(needed).toFixed(1)} extra credit pts or more on that upcoming ${catLabel(cat)} to reach ${round1(goal).toFixed(1)}%.`;
+              showNeedResult(needed <= 0 + 1e-9 ? "ok" : "warn", line, "Extra credit adds to points earned only, not points possible.");
+              return;
+            }
+
+            if (sol.impossibleHigh) {
+              showNeedResult(
+                "bad",
+                `Not possible: even a perfect ${catLabel(cat)} (${round1(y).toFixed(1)}/${round1(y).toFixed(1)}) won’t reach ${round1(goal).toFixed(1)}%.`,
+                "Try lowering the goal, increasing points, or adding more graded items."
+              );
+              return;
+            }
+
+            if (sol.alreadyMetEvenWithZero) {
+              showNeedResult(
+                "ok",
+                `You’d reach ${round1(goal).toFixed(1)}% overall even with 0/${round1(y).toFixed(1)} on that upcoming ${catLabel(cat)}.`,
+                "Your current grade buffer is already high enough under the model."
+              );
+              return;
+            }
+
+            const needed = sol.neededClamped;
+            const neededPct = (needed / y) * 100;
+            const line = `You need ${round1(needed).toFixed(1)}/${round1(y).toFixed(1)} or higher (${round1(neededPct).toFixed(1)}%) on that upcoming ${catLabel(cat)} to reach ${round1(goal).toFixed(1)}%.`;
+
+            const style = needed >= y - 1e-9 ? "warn" : needed <= 0 + 1e-9 ? "ok" : "ok";
+            showNeedResult(style, line, "This uses your current entries/weights and excludes exempt items.");
+          });
+        }
+
+        /**
+         * @param {"ok"|"warn"|"bad"} kind
+         * @param {string} big
+         * @param {string} small
+         */
+        function showNeedResult(kind, big, small) {
+          els.needResult.style.display = "block";
+          els.needResult.className = `resultBox ${kind}`;
+          els.needResult.innerHTML = `<div class="big">${esc(big)}</div>${small ? `<div class="small">${esc(small)}</div>` : ""}`;
+        }
+
+        function updateAll() {
+          const activeIds = getActiveCategoryIds(currentFile);
+          const state = fileAsState(currentFile);
+          const calc = calculateOverall(state.weights, state.entries, activeIds);
+          render(state, calc);
+        }
+
+        function main() {
+          store = loadStore();
+          setCurrentFile();
+          renderFileSelect();
+          renderCategoryUI();
+          syncWeightInputs(currentFile);
+          setHandlers();
+          updateAll();
+        }
+
+        main();
+      })();
+    </script>
+  </body>
+</html>
+
